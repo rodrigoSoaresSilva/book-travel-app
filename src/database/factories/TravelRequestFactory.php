@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\TravelRequest;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,15 +16,44 @@ class TravelRequestFactory extends Factory
      *
      * @return array<string, mixed>
      */
+    protected $model = TravelRequest::class;
+
     public function definition(): array
     {
+        $departure = $this->faker->dateTimeBetween('now', '+1 month');
+        $return = (clone $departure)->modify('+'.rand(1, 10).' days');
+
         return [
-            'requester_name' => $this->faker->name(),
+            'user_id' => User::factory(),
             'destination' => $this->faker->city(),
-            'departure_date' => $this->faker->dateTimeBetween('now', '+1 month'),
-            'return_date' => $this->faker->dateTimeBetween('+1 month', '+2 months'),
-            'status' => 'S',
+            'departure_date' => $departure->format('Y-m-d'),
+            'return_date' => $return->format('Y-m-d'),
+            'status' => $this->faker->randomElement(['S', 'A', 'C']),
+            'approved_by' => null,
+            'canceled_by' => null,
         ];
+    }
+
+    // Estado específico para status
+    public function solicitado(): static
+    {
+        return $this->state(['status' => 'S']);
+    }
+
+    public function aprovado(int $adminId): static
+    {
+        return $this->state([
+            'status' => 'A',
+            'approved_by' => $adminId,
+        ]);
+    }
+
+    public function cancelado(int $adminId): static
+    {
+        return $this->state([
+            'status' => 'C',
+            'canceled_by' => $adminId,
+        ]);
     }
 
 }
