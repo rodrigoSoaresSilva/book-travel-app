@@ -19,6 +19,9 @@
 /storage/*.key
 /storage/pail
 /vendor
+/.vagrant
 Homestead.json
 Homestead.yaml
 Thumbs.db
+npm-debug.log
+yarn-error.log
