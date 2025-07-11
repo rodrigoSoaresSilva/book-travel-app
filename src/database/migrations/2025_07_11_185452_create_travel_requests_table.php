@@ -21,8 +21,6 @@ return new class extends Migration
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('canceled_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
-            $table->id();
-            $table->timestamps();
         });
     }
 
