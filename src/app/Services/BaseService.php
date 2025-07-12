@@ -8,19 +8,27 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
+/**
+ * Classe abstrata BaseService
+ *
+ * Fornece funcionalidades genéricas de serviço base como listagem, paginação, etc.
+ * Classes que estendem essa base devem injetar um repositório específico.
+ */
 abstract class BaseService
 {
     /**
-     * Repositório base associado a este serviço
+     * Instância do repositório base que será utilizado pelo serviço.
      *
      * @var BaseRepository
      */
     public $repository;
 
     /**
-     * Injeta o repositório a ser utilizado pelo serviço
+     * Construtor do serviço base.
      *
-     * @param BaseRepository $repository
+     * Injeta o repositório que será utilizado pelas operações do serviço.
+     *
+     * @param BaseRepository $repository Repositório a ser injetado
      */
     public function __construct(BaseRepository $repository)
     {

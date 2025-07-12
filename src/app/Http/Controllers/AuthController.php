@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+/**
+ * Controller responsável por lidar com as requisições relacionadas a autenticação.
+ */
 class AuthController extends Controller
 {
     /**
