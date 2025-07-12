@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 abstract class BaseService
@@ -42,7 +43,7 @@ abstract class BaseService
      * @param Builder $query Query base do Eloquent
      * @param Request $request Request com possíveis parâmetros como `per_page`
      * 
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     public function getPaginated(Builder $query, Request $request): LengthAwarePaginator
     {
