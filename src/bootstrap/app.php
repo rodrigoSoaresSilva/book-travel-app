@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\ExceptionHandlerConfigurator;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,6 +18,5 @@ return Application::configure(basePath: dirname(__DIR__))
             'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    ->withExceptions(fn ($exceptions) => ExceptionHandlerConfigurator::configure($exceptions))
+    ->create();
