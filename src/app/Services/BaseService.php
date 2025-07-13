@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
@@ -69,4 +71,48 @@ abstract class BaseService
         return $this->repository->model->newQuery();
     }
 
+    /**
+     * Cria um novo registro no repositório.
+     *
+     * @param array $data Dados a serem inseridos.
+     * @return Model
+     */
+    public function create(array $data): Model
+    {
+        return $this->repository->create($data);
+    }
+
+    /**
+     * Atualiza um registro existente.
+     *
+     * @param int $id ID do registro.
+     * @param array $data Dados para atualização.
+     * @return bool
+     */
+    public function update(int $id, array $data): bool
+    {
+        return $this->repository->update($id, $data);
+    }
+
+    /**
+     * Remove um registro com base no ID.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete(int $id): bool
+    {
+        return $this->repository->remove($id);
+    }
+
+    /**
+     * Retorna um registro específico por ID.
+     *
+     * @param int $id
+     * @return Model|null
+     */
+    public function findById(int $id): ?Model
+    {
+        return $this->repository->getById($id);
+    }
 }
