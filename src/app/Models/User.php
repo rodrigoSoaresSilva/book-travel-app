@@ -45,6 +45,7 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'admin' => 'boolean',
         ];
     }
 
@@ -75,7 +76,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getIsAdminAttribute(): bool
     {
-        return $this->admin;
+        return (bool) $this->admin;
     }
 
 }
