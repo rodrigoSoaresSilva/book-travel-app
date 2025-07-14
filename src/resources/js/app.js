@@ -17,8 +17,10 @@ const app = createApp({});
 
 import LoginComponent from './components/Login.vue';
 import HomeComponent from './components/Home.vue';
+import TravelRequestComponent from './components/TravelRequest.vue';
 
 app.component('login-component', LoginComponent);
 app.component('home-component', HomeComponent);
+app.component('travel-request-component', TravelRequestComponent);
 
 app.mount('#app');
