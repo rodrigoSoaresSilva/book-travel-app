@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class TravelRequestUpdateRequest extends FormRequest
 {
@@ -46,5 +47,31 @@ class TravelRequestUpdateRequest extends FormRequest
             'return_date.required' => 'A data de volta é obrigatória.',
             'return_date.after_or_equal' => 'A data de volta deve ser igual ou posterior à data de ida.',
         ];
+    }
+
+    /**
+     * Adiciona uma regra de validação adicional após as validações padrão.
+     * Garante que pelo menos um dos campos seja enviado.
+     *
+     * @param Validator $validator
+     * @return void
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function ($validator) {
+            $fields = [
+                'destination',
+                'departure_date',
+                'return_date',
+            ];
+
+            $hasAtLeastOne = collect($fields)->contains(function ($field) {
+                return $this->filled($field);
+            });
+
+            if (! $hasAtLeastOne) {
+                $validator->errors()->add('update_fields', 'Pelo menos um campo deve ser informado para atualização.');
+            }
+        });
     }
 }
