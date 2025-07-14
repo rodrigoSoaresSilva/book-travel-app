@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 /**
  * Classe base para todos os testes.
- * 
+ *
  * Fornece constantes e métodos auxiliares para facilitar
  * a construção de URLs da API durante os testes.
  */
