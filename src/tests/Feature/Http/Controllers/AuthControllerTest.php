@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Http\Controllers;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -9,7 +9,7 @@ use App\Models\User;
 /**
  * Testes relacionados à autenticação de usuários via JWT.
  */
-class AuthTest extends TestCase
+class AuthControllerTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -33,7 +33,7 @@ class AuthTest extends TestCase
         ]);
 
         // Verifica se a resposta está correta e contém os dados esperados
-        $response->assertStatus(200)
+        $response->assertOk()
                  ->assertJsonStructure([
                      'access_token',
                      'token_type',
@@ -55,7 +55,7 @@ class AuthTest extends TestCase
         ]);
 
         // Espera receber status 401 e mensagem de erro apropriada
-        $response->assertStatus(401)
+        $response->assertUnauthorized()
                  ->assertJson(['error' => 'Não autorizado']);
     }
 
@@ -75,7 +75,7 @@ class AuthTest extends TestCase
                          ->postJson(self::getAuthUrl('me'));
 
         // Verifica se os dados retornados correspondem ao usuário logado
-        $response->assertStatus(200)
+        $response->assertOk()
                  ->assertJson([
                      'id' => $user->id,
                      'email' => $user->email,
@@ -98,7 +98,7 @@ class AuthTest extends TestCase
                          ->postJson(self::getAuthUrl('logout'));
 
         // Verifica se a resposta indica sucesso
-        $response->assertStatus(200)
+        $response->assertOk()
                  ->assertJson(['message' => 'Desconectado com sucesso!']);
     }
 }
