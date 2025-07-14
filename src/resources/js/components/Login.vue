@@ -86,8 +86,8 @@
                 fetch(url, config)
                     .then(response => response.json())
                     .then(data => {
-                        if(data.token){
-                            document.cookie = 'token='+data.token+';SameSite=Lax';
+                        if(data.access_token){
+                            document.cookie = 'token='+data.access_token+';SameSite=Lax';
                         }
                         e.target.submit();
                     });
