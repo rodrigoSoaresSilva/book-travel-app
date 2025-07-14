@@ -15,4 +15,10 @@ import { createApp } from 'vue';
 
 const app = createApp({});
 
+import LoginComponent from './components/Login.vue';
+import HomeComponent from './components/Home.vue';
+
+app.component('login-component', LoginComponent);
+app.component('home-component', HomeComponent);
+
 app.mount('#app');
