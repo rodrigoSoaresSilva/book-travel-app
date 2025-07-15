@@ -18,9 +18,23 @@ const app = createApp({});
 import LoginComponent from './components/Login.vue';
 import HomeComponent from './components/Home.vue';
 import TravelRequestComponent from './components/TravelRequest.vue';
+import InputContainerComponent from './components/InputContainer.vue';
+import TableComponent from './components/Table.vue';
+import CardComponent from './components/Card.vue';
+import ModalComponent from './components/Modal.vue';
+import AlertComponent from './components/Alert.vue';
+import PaginationComponent from './components/Pagination.vue';
+import DateFilterComponent from '@/components/DateFilterComponent.vue';
 
 app.component('login-component', LoginComponent);
 app.component('home-component', HomeComponent);
 app.component('travel-request-component', TravelRequestComponent);
+app.component('input-container-component', InputContainerComponent);
+app.component('table-component', TableComponent);
+app.component('card-component', CardComponent);
+app.component('modal-component', ModalComponent);
+app.component('alert-component', AlertComponent);
+app.component('pagination-component', PaginationComponent);
+app.component('date-filter-component', DateFilterComponent);
 
 app.mount('#app');

@@ -32,3 +32,21 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
 //     enabledTransports: ['ws', 'wss'],
 // });
+
+axios.interceptors.request.use(
+    config => {
+        let cookie = document.cookie.split(';').find(index => {
+            return index.includes('token=');;
+        });
+
+        let token = 'Bearer ' + cookie.split('=')[1];
+
+        config.headers.Authorization = token;
+        config.headers['Accept'] = 'application/json';
+
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    },
+);
