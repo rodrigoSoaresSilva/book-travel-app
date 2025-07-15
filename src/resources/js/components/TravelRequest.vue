@@ -63,6 +63,7 @@
                             id="inputDestino"
                             placeholder="Destino"
                             v-model="search.destination"
+                            :disabled="showLoading"
                         >
                         </input-container-component>
                     </div>
@@ -75,6 +76,7 @@
                                 class="form-control"
                                 id="inputStatus"
                                 v-model="search.status"
+                                :disabled="showLoading"
                             >
                                 <option value="">Todos</option>
                                 <option v-for="(label, value) in statuses" :value="value" :key="value">
@@ -88,6 +90,7 @@
                             title="Data de Ida"
                             id="departure_date"
                             v-model="search.departure_date"
+                            :isLoading="showLoading"
                         />
                     </div>
                     <div class="col-12">
@@ -95,6 +98,7 @@
                             title="Data de Volta"
                             id="return_date"
                             v-model="search.return_date"
+                            :isLoading="showLoading"
                         />
                     </div>
                     <div class="col-12">
@@ -102,6 +106,7 @@
                             title="Data do Pedido"
                             id="created_at"
                             v-model="search.created_at"
+                            :disabled="showLoading"
                         />
                     </div>
                 </div>
@@ -160,6 +165,47 @@
             </template>
         </modal-component>
         <!-- fim modal visualizar -->
+        
+        <!-- início modal editar -->
+        <modal-component id="modalUpdateTravelRequest" title="Detalhes do Pedido">
+            <template v-slot:alerts>
+                <alert-component type="success" title="Operação realizada com sucesso!" :details="$store.state.transaction" v-if="$store.state.transaction.status == 'success'"></alert-component>
+                <alert-component type="danger" title="Falha ao executar atualização!" :details="$store.state.transaction" v-if="$store.state.transaction.status == 'error'"></alert-component>
+            </template>
+
+            <template v-slot:content>
+                <div class="form-group"></div>
+                <div class="row">
+                    <div class="col">
+                        <input-container-component title="Destino">
+                            <input type="text" class="form-control" v-model="$store.state.item.destination" :disabled="showLoading">
+                        </input-container-component>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <input-container-component title="Data de ida">
+                            <input type="date" class="form-control" v-model="departureDateFormatted" :disabled="showLoading">
+                        </input-container-component>
+                    </div>
+                    <div class="col-6">
+                        <input-container-component title="Data de retorno">
+                            <input type="date" class="form-control" v-model="returnDateFormatted" :disabled="showLoading">
+                        </input-container-component>
+                    </div>
+                </div>
+            </template>
+            <template v-slot:footer>
+                <button class="btn btn-success" @click="updateTravelRequest" :disabled="showLoading">
+                    <span v-if="showLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span v-if="!showLoading">Salvar</span>
+                    <span v-else> Salvando...</span>
+                </button>
+
+                <button class="btn btn-danger" data-bs-dismiss="modal" :disabled="showLoading">Fechar</button>
+            </template>
+        </modal-component>
+        <!-- fim modal editar -->
     </div>
 </template>
 
@@ -204,6 +250,24 @@
                     A: 'Aprovado',
                     C: 'Cancelado'
                 },
+            }
+        },
+        computed: {
+            departureDateFormatted: {
+                get() {
+                    return formatToDateInput(this.$store.state.item.departure_date);
+                },
+                set(value) {
+                    this.$store.state.item.departure_date = value;
+                }
+            },
+            returnDateFormatted: {
+                get() {
+                    return formatToDateInput(this.$store.state.item.return_date);
+                },
+                set(value) {
+                    this.$store.state.item.return_date = value;
+                }
             }
         },
         methods: {
@@ -262,6 +326,40 @@
                 }
 
                 this.getTravelRequests();
+            },
+            updateTravelRequest(){
+                this.showLoading = true;
+
+                let url = this.urlBase + '/' + this.$store.state.item.id;
+
+                let formData = new FormData();
+                formData.append('_method', 'patch');
+                formData.append('destination', this.$store.state.item.destination);
+                formData.append('departure_date', this.$store.state.item.departure_date);
+                formData.append('return_date', this.$store.state.item.return_date);
+
+                axios.post(url, formData)
+                    .then(response => {
+                        this.$store.state.transaction.status = 'success';
+                        this.$store.state.transaction.message = 'A sua solicitação de viagem foi atualizada!';
+                        this.$store.state.transaction.data = [];
+
+                        const index = this.travelRequests.data.findIndex(i => i.id === response.data.result.id);
+                        if (index !== -1) {
+                            this.travelRequests.data[index] = response.data.result;
+                        }
+                    })
+                    .catch(errors => {
+                        console.log('Error:', errors);
+                        this.$store.state.transaction = {
+                            status: 'error',
+                            data: errors.response.data.errors,
+                            message: errors.response.data.message
+                        }
+                    })
+                    .finally(() => {
+                        this.showLoading = false;
+                    });
             },
             clearFilter(){
                 this.urlFilter = '';

@@ -112,7 +112,7 @@ class TravelRequestController extends Controller
             return response()->json(['message' => 'Falha ao atualizar pedido de viagem'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json(['message' => 'Pedido de viagem atualizado com sucesso', 'result' => $updated], Response::HTTP_OK);
+        return response()->json(['message' => 'Pedido de viagem atualizado com sucesso', 'result' => $travelRequest->fresh()], Response::HTTP_OK);
     }
 
     /**

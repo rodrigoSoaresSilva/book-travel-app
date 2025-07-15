@@ -11,6 +11,7 @@
         :id="idOperator"
         :aria-describedby="idHelp"
         v-model="model.operator"
+        :disabled="isLoading"
       >
         <option value="">Selecione o operador</option>
         <option value="equal">Igual</option>
@@ -23,6 +24,7 @@
         class="form-control"
         :id="idDate"
         v-model="model.date"
+        :disabled="isLoading"
       />
 
       <div v-if="model.operator === 'between'" class="d-flex gap-2">
@@ -31,12 +33,14 @@
           class="form-control"
           :id="idDateStart"
           v-model="model.date_start"
+          :disabled="isLoading"
         />
         <input
           type="date"
           class="form-control"
           :id="idDateEnd"
           v-model="model.date_end"
+          :disabled="isLoading"
         />
       </div>
     </input-container-component>
@@ -49,6 +53,10 @@ export default {
     title: String,
     id: String,
     modelValue: Object,
+    isLoading: {
+      type: Boolean,
+      default: false
+    },
     idHelp: {
       type: String,
       default: ''
