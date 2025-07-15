@@ -48,6 +48,20 @@ class AuthController extends Controller
     }
 
     /**
+     * Gera um novo token JWT para o usuário autenticado.
+     *
+     * Este método é utilizado para renovar o token de autenticação
+     * antes que ele expire, mantendo a sessão ativa sem exigir novo login.
+     *
+     * @return \Illuminate\Http\JsonResponse Retorna um novo token JWT.
+     */
+    public function refresh()
+    {
+        $token = auth('api')->refresh();
+        return response()->json(['token' => $token]);
+    }
+
+    /**
      * Realiza o logout do usuário invalidando o token atual.
      *
      * @return \Illuminate\Http\JsonResponse

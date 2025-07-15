@@ -50,3 +50,21 @@ axios.interceptors.request.use(
         return Promise.reject(error);
     },
 );
+
+axios.interceptors.response.use(
+    response => {
+        return response;
+    },
+    error => {
+        if(error.response.status == 401 && error.response.data.message == 'A assinatura do Token não pôde ser verificada.'){
+            axios.post('http://localhost:8000/api/auth/refresh')
+            .then(response => {
+                if(response.data.token){
+                    document.cookie = 'token='+response.data.token+';SameSite=Lax';
+                    window.location.reload();
+                }
+            });
+        }
+        return Promise.reject(error);
+    },
+);
