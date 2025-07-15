@@ -1,55 +1,15 @@
 <template>
     <div class="container">
+        <loading-overlay-component v-if="showLoading"></loading-overlay-component>
+
         <div class="row justify-content-center">
             <div class="col-md-8 mb-3">
-                <card-component title="Buscar pedidos">
+                <card-component title="Solicitações de viagem">
                     <template v-slot:content>
-                        <div class="row g-3 mb-3">
-                            <input-container-component
-                            title="Destino"
-                            id="inputDestino"
-                            id-help="destinoHelp"
-                            text-help="Destino da viagem"
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="inputDestino"
-                                aria-describedby="destinoHelp"
-                                placeholder="Destino"
-                                v-model="search.destination"
-                            >
-                            </input-container-component>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <date-filter-component
-                                title="Data de Ida"
-                                id="departure_date"
-                                v-model="search.departure_date"
-                            />
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <date-filter-component
-                                title="Data de Volta"
-                                id="return_date"
-                                v-model="search.return_date"
-                            />
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <date-filter-component
-                                title="Data do Pedido"
-                                id="created_at"
-                                v-model="search.created_at"
-                            />
-                        </div>
-                    </template>
-                    <template v-slot:footer>
-                        <button type="submit" class="btn btn-primary btn-sm float-end" @click="searchTravelRequest()">Search</button>
-                    </template>
-                </card-component>
 
-                <card-component title="Pedidos">
-                    <template v-slot:content>
+                        <button v-if="urlFilter != ''" type="button" @click="clearFilter()" class="btn btn-primary btn-sm ms-2 float-end">Limpar filtros</button>
+                        <button type="button" class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#modalSearchTravelRequest">Filtrar</button>
+
                         <table-component
                             :data="travelRequests.data"
                             :view="{visible: true, dataToggle: 'modal', dataTarget: '#modalViewTravelRequest'}"
@@ -90,6 +50,72 @@
                 </card-component>
             </div>
         </div>
+
+        <!-- início modal buscar -->
+        <modal-component id="modalSearchTravelRequest" title="Filtrar pedidos">
+
+            <template v-slot:content>
+                <div class="row g-3 mb-3">
+                    <div class="col-8">
+                        <input-container-component
+                        title="Destino"
+                        id="inputDestino"
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="inputDestino"
+                            placeholder="Destino"
+                            v-model="search.destination"
+                        >
+                        </input-container-component>
+                    </div>
+                    <div class="col-4">
+                        <input-container-component
+                            title="Status"
+                            id="inputStatus"
+                        >
+                            <select
+                                class="form-control"
+                                id="inputStatus"
+                                v-model="search.status"
+                            >
+                                <option value="">Todos</option>
+                                <option value="S">Solicitado</option>
+                                <option value="A">Aprovado</option>
+                                <option value="C">Cancelado</option>
+                            </select>
+                        </input-container-component>
+                    </div>
+                    <div class="col-12">
+                        <date-filter-component
+                            title="Data de Ida"
+                            id="departure_date"
+                            v-model="search.departure_date"
+                        />
+                    </div>
+                    <div class="col-12">
+                        <date-filter-component
+                            title="Data de Volta"
+                            id="return_date"
+                            v-model="search.return_date"
+                        />
+                    </div>
+                    <div class="col-12">
+                        <date-filter-component
+                            title="Data do Pedido"
+                            id="created_at"
+                            v-model="search.created_at"
+                        />
+                    </div>
+                </div>
+            </template>
+            <template v-slot:footer>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="searchTravelRequest()">Buscar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+            </template>
+        </modal-component>
+        <!-- fim modal buscar -->
     </div>
 </template>
 
@@ -103,6 +129,7 @@
                 urlPagination: '',
                 urlFilter: '',
                 travelRequests: {data: []},
+                showLoading: false,
                 search: {
                     destination: '', 
                     departure_date: {
@@ -128,14 +155,18 @@
         },
         methods: {
             getTravelRequests(){
+                this.showLoading = true;
+
                 let url = this.urlBase + '?' + this.urlPagination + this.urlFilter;
 
                 axios.get(url)
                 .then(response => {
                     this.travelRequests = response.data;
-                    console.log(response.data);
                 })
                 .catch(errors => {console.log(errors)})
+                .finally(() => {
+                    this.showLoading = false;
+                });
             },
             paginate(link){
                 if(link.url){
@@ -177,6 +208,10 @@
                     this.urlFilter = '';
                 }
 
+                this.getTravelRequests();
+            },
+            clearFilter(){
+                this.urlFilter = '';
                 this.getTravelRequests();
             },
         },
