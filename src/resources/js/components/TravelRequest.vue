@@ -208,7 +208,7 @@
         <!-- fim modal criação -->
         
         <!-- início modal editar -->
-        <modal-component id="modalUpdateTravelRequest" title="Detalhes do Pedido">
+        <modal-component id="modalUpdateTravelRequest" title="Editar Pedido">
             <template v-slot:alerts>
                 <alert-component type="success" title="Operação realizada com sucesso!" :details="$store.state.transaction" v-if="$store.state.transaction.status == 'success'"></alert-component>
                 <alert-component type="danger" title="Falha ao executar atualização!" :details="$store.state.transaction" v-if="$store.state.transaction.status == 'error'"></alert-component>
@@ -247,6 +247,45 @@
             </template>
         </modal-component>
         <!-- fim modal editar -->
+
+        <!-- início modal remover -->
+        <modal-component id="modalRemoveTravelRequest" title="Remover Pedido">
+            <template v-slot:alerts>
+                <alert-component type="success" title="Operação realizada com sucesso!" :details="$store.state.transaction" v-if="$store.state.transaction.status == 'success'"></alert-component>
+                <alert-component type="danger" title="Falha ao executar exclusão!" :details="$store.state.transaction" v-if="$store.state.transaction.status == 'error'"></alert-component>
+            </template>
+            <template v-slot:content v-if="$store.state.transaction.status != 'success'">
+                <div class="row">
+                    <div class="col-3">
+                        <input-container-component title="ID">
+                            <input type="text" class="form-control" :value="$store.state.item.id" disabled>
+                        </input-container-component>
+                    </div>
+                    <div class="col-9">
+                        <input-container-component title="Status">
+                            <input type="text" class="form-control" :value="statuses[$store.state.item.status]" disabled>
+                        </input-container-component>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input-container-component title="Destino">
+                            <input type="text" class="form-control" :value="$store.state.item.destination" disabled>
+                        </input-container-component>
+                    </div>
+                </div>
+            </template>
+            <template v-slot:footer>
+                <button class="btn btn-primary" @click="remove" :disabled="showLoading" v-if="$store.state.transaction.status != 'success'">
+                    <span v-if="showLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span v-if="!showLoading">Remover</span>
+                    <span v-else> Removendo...</span>
+                </button>
+
+                <button class="btn btn-danger" data-bs-dismiss="modal" :disabled="showLoading">Fechar</button>
+            </template>
+        </modal-component>
+        <!-- fim modal remover -->
     </div>
 </template>
 
@@ -435,6 +474,37 @@
                         if (index !== -1) {
                             this.travelRequests.data[index] = response.data.result;
                         }
+                    })
+                    .catch(errors => {
+                        console.log('Error:', errors);
+                        this.$store.state.transaction = {
+                            status: 'error',
+                            data: errors.response.data.errors,
+                            message: errors.response.data.message
+                        }
+                    })
+                    .finally(() => {
+                        this.showLoading = false;
+                    });
+            },
+            remove(){
+                let confirmation = confirm('Deseja mesmo apagar esse registro?');
+                
+                if(!confirmation) return false;
+
+                this.showLoading = true;
+
+                let url = this.urlBase + '/' + this.$store.state.item.id;
+
+                let formData = new FormData();
+                formData.append('_method', 'delete');
+
+                axios.post(url, formData)
+                    .then(response => {
+                        this.$store.state.transaction.status = 'success';
+                        this.$store.state.transaction.message = 'Solicitação de viagem removida com sucesso!';
+
+                        this.getTravelRequests();
                     })
                     .catch(errors => {
                         console.log('Error:', errors);
