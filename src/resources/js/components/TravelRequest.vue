@@ -1,6 +1,7 @@
 <template>
     <div class="container">
         <loading-overlay-component v-if="showLoading"></loading-overlay-component>
+        <toast-container-component ref="toastContainer"></toast-container-component>
 
         <div class="row justify-content-center">
             <div class="col-md-8 mb-3">
@@ -15,6 +16,13 @@
                             :view="{visible: true, dataToggle: 'modal', dataTarget: '#modalViewTravelRequest'}"
                             :update="{visible: true, dataToggle: 'modal', dataTarget: '#modalUpdateTravelRequest'}"
                             :remove="{visible: true, dataToggle: 'modal', dataTarget: '#modalRemoveTravelRequest'}"
+                            :approve="{visible: true}"
+                            :cancel="{visible: true}"
+                            :onApprove="handleApprove"
+                            :onCancel="handleCancel"
+                            :isLoading="showLoading"
+                            :isApproving="isApproving"
+                            :isCanceling="isCanceling"
                             :titles="{
                                 id: {title: 'ID', type: 'text'},
                                 created_at: {title: 'Data Pedido', type: 'date'},
@@ -304,6 +312,8 @@
                 urlFilter: '',
                 travelRequests: {data: []},
                 showLoading: false,
+                isApproving: false,
+                isCanceling: false,
                 travelRequest: {
                     destination: '', 
                     departure_date: '',
@@ -518,10 +528,62 @@
                         this.showLoading = false;
                     });
             },
+            handleApprove(){
+                let confirmation = confirm('Deseja mesmo aprovar esse pedido?');
+                
+                if(!confirmation) return false;
+
+                this.showLoading = true;
+                this.isApproving = true;
+
+                let url = this.urlBase + '/' + this.$store.state.item.id + '/approve';
+
+                axios.post(url)
+                    .then(response => {
+                        this.showToast('success', 'Solicitação de viagem aprovada com sucesso!', 'Aprovação');
+                    })
+                    .catch(errors => {
+                        console.log('Error:', errors);
+                        this.showToast('danger', errors.response.data.message, 'Erro na requisição');
+                    })
+                    .finally(() => {
+                        this.showLoading = false;
+                        this.isApproving = false;
+                    });
+            },
+            handleCancel(){
+                let confirmation = confirm('Deseja mesmo cancelar esse pedido?');
+                if(!confirmation) return false;
+
+                this.showLoading = true;
+                this.isCanceling = true;
+
+                let url = this.urlBase + '/' + this.$store.state.item.id + '/approve';
+
+                axios.post(url)
+                    .then(response => {
+                        this.showToast('success', 'Solicitação de viagem cancelada com sucesso!', 'Cancelamento');
+                    })
+                    .catch(errors => {
+                        console.log('Error:', errors);
+                        this.showToast('danger', errors.response.data.message, 'Erro na requisição');
+                    })
+                    .finally(() => {
+                        this.showLoading = false;
+                        this.isCanceling = false;
+                    });
+            },
             clearFilter(){
                 this.urlFilter = '';
                 this.getTravelRequests();
             },
+            showToast(type = 'success', message = '', title = 'Notificação') {
+                this.$refs.toastContainer.addToast({
+                    title,
+                    message,
+                    variant: type
+                });
+            }
         },
         mounted(){
             this.getTravelRequests();

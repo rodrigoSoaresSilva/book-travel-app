@@ -16,6 +16,10 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
+    <script>
+        window.AuthUser = @json(Auth::user());
+    </script>
 </head>
 
 <body>

@@ -13,6 +13,7 @@ const store = createStore({
     return {
       item: {},
       transaction: {status: '', message: '', data: ''},
+      user: window.AuthUser,
     }
   },
 })
