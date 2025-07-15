@@ -24,11 +24,7 @@
                                 status: {
                                     title: 'Status', 
                                     type: 'text', 
-                                    cast: {
-                                        S: 'Solicitado',
-                                        A: 'Aprovado',
-                                        C: 'Cancelado',
-                                    }
+                                    cast: statuses
                                 },
                             }">
                         </table-component>
@@ -81,9 +77,9 @@
                                 v-model="search.status"
                             >
                                 <option value="">Todos</option>
-                                <option value="S">Solicitado</option>
-                                <option value="A">Aprovado</option>
-                                <option value="C">Cancelado</option>
+                                <option v-for="(label, value) in statuses" :value="value" :key="value">
+                                     {{ label }}
+                                </option>
                             </select>
                         </input-container-component>
                     </div>
@@ -116,8 +112,60 @@
             </template>
         </modal-component>
         <!-- fim modal buscar -->
+
+        <!-- início modal visualizar -->
+        <modal-component id="modalViewTravelRequest" title="Detalhes do Pedido">
+            <template v-slot:content>
+                <div class="row">
+                    <div class="col-4">
+                        <input-container-component title="ID">
+                            <input type="text" class="form-control" :value="$store.state.item.id" disabled>
+                        </input-container-component>
+                    </div>
+                    <div class="col-8">
+                        <input-container-component title="Data do pedido">
+                            <input type="date" class="form-control" :value="formatToDateInput($store.state.item.created_at)" disabled>
+                        </input-container-component>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input-container-component title="Destino">
+                            <input type="text" class="form-control" :value="$store.state.item.destination" disabled>
+                        </input-container-component>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <input-container-component title="Data de ida">
+                            <input type="date" class="form-control" :value="formatToDateInput($store.state.item.departure_date)" disabled>
+                        </input-container-component>
+                    </div>
+                    <div class="col-6">
+                        <input-container-component title="Data de retorno">
+                            <input type="date" class="form-control" :value="formatToDateInput($store.state.item.return_date)" disabled>
+                        </input-container-component>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input-container-component title="Status">
+                            <input type="text" class="form-control" :value="statuses[$store.state.item.status]" disabled>
+                        </input-container-component>
+                    </div>
+                </div>
+            </template>
+            <template v-slot:footer>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+            </template>
+        </modal-component>
+        <!-- fim modal visualizar -->
     </div>
 </template>
+
+<script setup>
+    import { formatToDateInput } from '@/utils/date';
+</script>
 
 <script>
     import axios from 'axios';
@@ -151,6 +199,11 @@
                         date_end: '',
                     },
                  },
+                 statuses: {
+                    S: 'Solicitado',
+                    A: 'Aprovado',
+                    C: 'Cancelado'
+                },
             }
         },
         methods: {

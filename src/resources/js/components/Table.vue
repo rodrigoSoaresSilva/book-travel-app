@@ -17,9 +17,11 @@
                     </span>
                 </td>
                 <td v-if="view.visible || update.visible || remove.visible">
-                    <button v-if="view.visible" class="btn btn-outline-success btn-sm" :data-bs-toggle="view.dataToggle" :data-bs-target="view.dataTarget" @click="setStore(obj)">Ver</button>
-                    <button v-if="update.visible" class="btn btn-outline-primary btn-sm" :data-bs-toggle="update.dataToggle" :data-bs-target="update.dataTarget" @click="setStore(obj)">Editar</button>
-                    <button v-if="remove.visible" class="btn btn-outline-danger btn-sm" :data-bs-toggle="remove.dataToggle" :data-bs-target="remove.dataTarget" @click="setStore(obj)">Remover</button>
+                    <div class="float-end">
+                        <button v-if="view.visible" class="btn btn-outline-success btn-sm ms-2" :data-bs-toggle="view.dataToggle" :data-bs-target="view.dataTarget" @click="setStore(obj)">Ver</button>
+                        <button v-if="update.visible" class="btn btn-outline-primary btn-sm ms-2" :data-bs-toggle="update.dataToggle" :data-bs-target="update.dataTarget" @click="setStore(obj)">Editar</button>
+                        <button v-if="remove.visible" class="btn btn-outline-danger btn-sm ms-2" :data-bs-toggle="remove.dataToggle" :data-bs-target="remove.dataTarget" @click="setStore(obj)">Remover</button>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -33,5 +35,13 @@
 <script>
     export default {
         props: ['data', 'titles', 'view', 'update', 'remove', ],
+        methods: {
+            setStore(obj) {
+                this.$store.state.transaction.status = '';
+                this.$store.state.transaction.message = '';
+                this.$store.state.transaction.data = '';
+                this.$store.state.item = obj;
+            }
+        }
     }
 </script>
