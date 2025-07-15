@@ -6,6 +6,16 @@
 
 import './bootstrap';
 import { createApp } from 'vue';
+import { createStore } from 'vuex';
+
+const store = createStore({
+  state () {
+    return {
+      item: {},
+      transaction: {status: '', message: '', data: ''},
+    }
+  },
+})
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -38,5 +48,7 @@ app.component('alert-component', AlertComponent);
 app.component('pagination-component', PaginationComponent);
 app.component('date-filter-component', DateFilterComponent);
 app.component('loading-overlay-component', LoadingOverlayComponent);
+
+app.use(store);
 
 app.mount('#app');
