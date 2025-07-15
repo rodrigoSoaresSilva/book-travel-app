@@ -24,7 +24,8 @@ import CardComponent from './components/Card.vue';
 import ModalComponent from './components/Modal.vue';
 import AlertComponent from './components/Alert.vue';
 import PaginationComponent from './components/Pagination.vue';
-import DateFilterComponent from '@/components/DateFilterComponent.vue';
+import DateFilterComponent from './components/DateFilter.vue';
+import LoadingOverlayComponent from './components/LoadingOverlay.vue';
 
 app.component('login-component', LoginComponent);
 app.component('home-component', HomeComponent);
@@ -36,5 +37,6 @@ app.component('modal-component', ModalComponent);
 app.component('alert-component', AlertComponent);
 app.component('pagination-component', PaginationComponent);
 app.component('date-filter-component', DateFilterComponent);
+app.component('loading-overlay-component', LoadingOverlayComponent);
 
 app.mount('#app');
