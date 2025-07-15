@@ -165,6 +165,47 @@
             </template>
         </modal-component>
         <!-- fim modal visualizar -->
+
+        <!-- início modal criação -->
+        <modal-component id="modalCreateTravelRequest" title="Solicitar nava viagem">
+            <template v-slot:alerts>
+                <alert-component type="success" title="Operação realizada com sucesso!" :details="travelRequest.statusTransaction" v-if="travelRequest.statusTransaction.status == 'success'"></alert-component>
+                <alert-component type="danger" title="Falha ao executar nova solicitação!" :details="travelRequest.statusTransaction" v-if="travelRequest.statusTransaction.status == 'error'"></alert-component>
+            </template>
+
+            <template v-slot:content>
+                <div class="form-group"></div>
+                <div class="row">
+                    <div class="col">
+                        <input-container-component title="Destino">
+                            <input type="text" class="form-control" v-model="travelRequest.destination" :disabled="showLoading">
+                        </input-container-component>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <input-container-component title="Data de ida">
+                            <input type="date" class="form-control" v-model="travelRequest.departure_date" :disabled="showLoading">
+                        </input-container-component>
+                    </div>
+                    <div class="col-6">
+                        <input-container-component title="Data de retorno">
+                            <input type="date" class="form-control" v-model="travelRequest.return_date" :disabled="showLoading">
+                        </input-container-component>
+                    </div>
+                </div>
+            </template>
+            <template v-slot:footer>
+                <button class="btn btn-success" @click="createTravelRequest" :disabled="showLoading">
+                    <span v-if="showLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span v-if="!showLoading">Salvar</span>
+                    <span v-else> Salvando...</span>
+                </button>
+
+                <button class="btn btn-danger" data-bs-dismiss="modal" :disabled="showLoading">Fechar</button>
+            </template>
+        </modal-component>
+        <!-- fim modal criação -->
         
         <!-- início modal editar -->
         <modal-component id="modalUpdateTravelRequest" title="Detalhes do Pedido">
@@ -224,6 +265,12 @@
                 urlFilter: '',
                 travelRequests: {data: []},
                 showLoading: false,
+                travelRequest: {
+                    destination: '', 
+                    departure_date: '',
+                    return_date: '',
+                    statusTransaction: {},
+                },
                 search: {
                     destination: '', 
                     departure_date: {
@@ -291,6 +338,17 @@
                     this.getTravelRequests();
                 }
             },
+            clearTransaction(){
+                this.$store.state.transaction.status = '';                
+                this.$store.state.transaction.message = '';
+                this.$store.state.transaction.data = [];
+            },
+            resetModalCreateTravelRequest() {
+                this.travelRequest.destination = '';
+                this.travelRequest.departure_date = '';
+                this.travelRequest.return_date = '';
+                this.travelRequest.statusTransaction = {};
+            },
             searchTravelRequest(){
                 let filter = '';
 
@@ -327,8 +385,38 @@
 
                 this.getTravelRequests();
             },
+            createTravelRequest(){
+                this.showLoading = true;
+
+                let formData = new FormData();
+                formData.append('destination', this.travelRequest.destination);
+                formData.append('departure_date', this.travelRequest.departure_date);
+                formData.append('return_date', this.travelRequest.return_date);
+
+                this.travelRequest.statusTransaction.data = [];
+
+                axios.post(this.urlBase, formData)
+                    .then(response => {
+                        this.travelRequest.statusTransaction.status = 'success';
+                        this.travelRequest.statusTransaction.message = 'A sua solicitação de viagem foi criada!';
+                        
+                        this.getTravelRequests();
+                    })
+                    .catch(errors => {
+                        console.log('Error:', errors);
+                        this.travelRequest.statusTransaction = {
+                            status: 'error',
+                            data: errors.response.data.errors,
+                            message: errors.response.data.message
+                        }
+                    })
+                    .finally(() => {
+                        this.showLoading = false;
+                    });
+            },
             updateTravelRequest(){
                 this.showLoading = true;
+                this.clearTransaction();
 
                 let url = this.urlBase + '/' + this.$store.state.item.id;
 
@@ -342,7 +430,6 @@
                     .then(response => {
                         this.$store.state.transaction.status = 'success';
                         this.$store.state.transaction.message = 'A sua solicitação de viagem foi atualizada!';
-                        this.$store.state.transaction.data = [];
 
                         const index = this.travelRequests.data.findIndex(i => i.id === response.data.result.id);
                         if (index !== -1) {
@@ -368,6 +455,11 @@
         },
         mounted(){
             this.getTravelRequests();
+
+            const modal = document.getElementById('modalCreateTravelRequest');
+            if (modal) {
+                modal.addEventListener('hidden.bs.modal', this.resetModalCreateTravelRequest);
+            }
         }
     }
 </script>
