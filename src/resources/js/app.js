@@ -36,6 +36,8 @@ import AlertComponent from './components/Alert.vue';
 import PaginationComponent from './components/Pagination.vue';
 import DateFilterComponent from './components/DateFilter.vue';
 import LoadingOverlayComponent from './components/LoadingOverlay.vue';
+import ToastComponent from './components/Toast.vue';
+import ToastContainerComponent from './components/ToastContainer.vue';
 
 app.component('login-component', LoginComponent);
 app.component('home-component', HomeComponent);
@@ -48,6 +50,8 @@ app.component('alert-component', AlertComponent);
 app.component('pagination-component', PaginationComponent);
 app.component('date-filter-component', DateFilterComponent);
 app.component('loading-overlay-component', LoadingOverlayComponent);
+app.component('toast-component', ToastComponent);
+app.component('toast-container-component', ToastContainerComponent);
 
 app.use(store);
 
